@@ -18,7 +18,20 @@ A Python script that converts PowerPoint (.pptx) files exported from Google Slid
 
 ## Installation
 
-### Prerequisites
+### Option 1: GitHub Codespaces (Recommended)
+
+The easiest way to get started! This repository includes a complete dev container configuration.
+
+1. Click the "Code" button on GitHub
+2. Select "Codespaces" tab
+3. Click "Create codespace on main"
+4. Wait for the environment to set up automatically
+
+All dependencies (Python packages, Node.js, Slidev) are installed automatically!
+
+### Option 2: Local Installation
+
+#### Prerequisites
 
 1. **Python 3.7+** 
 2. **python-pptx library**
@@ -27,12 +40,19 @@ A Python script that converts PowerPoint (.pptx) files exported from Google Slid
 pip install python-pptx
 ```
 
-### Install Slidev (if not already installed)
+#### Install Slidev (if not already installed)
 
 ```bash
 npm install -g @slidev/cli
 npm install -g @slidev/theme-seriph
 ```
+
+### Option 3: VS Code Dev Containers
+
+1. Install the "Dev Containers" extension in VS Code
+2. Open this repository in VS Code
+3. Press `F1` → "Dev Containers: Reopen in Container"
+4. All dependencies install automatically
 
 ## Usage
 
