@@ -189,6 +189,48 @@ class SlidevConverter:
             
         return slides
     
+    def convert_to_slidev(self, content: str, title: str, output_dir: str = ".") -> str:
+        """Convert markdown content to Slidev presentation"""
+        
+        # Parse the content
+        slides = self.parse_google_doc_content(content)
+        
+        # Create presentation-specific subdirectory
+        presentation_dir = self.sanitize_filename(title)
+        output_path_obj = Path(output_dir) / presentation_dir
+        output_path_obj.mkdir(parents=True, exist_ok=True)
+        
+        # Generate Slidev markdown
+        slidev_content = []
+        
+        # Add frontmatter
+        slidev_content.append(self.generate_frontmatter(title))
+        
+        # Convert each slide
+        for i, slide in enumerate(slides):
+            # Skip the separator before the first slide (title slide)
+            if i > 0:
+                slidev_content.append("---")
+            slidev_content.append(self.convert_slide_to_markdown(slide))
+        
+        # Add closing slide
+        slidev_content.append("---")
+        slidev_content.append(self.add_closing_slide())
+        
+        # Join everything
+        full_content = "\n".join(slidev_content)
+        
+        # Write to file as slides.md (Slidev default)
+        output_path = output_path_obj / "slides.md"
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(full_content)
+        
+        print(f"✅ Slidev presentation created: {output_path}")
+        print(f"📊 Converted {len(slides)} slides")
+        print(f"📁 Output directory: {output_path_obj}")
+        return str(output_path)
+    
     def generate_frontmatter(self, title: str, author: str = "Kenneth Kousen") -> str:
         """Generate Slidev frontmatter"""
         # Escape title for YAML - wrap in quotes to handle special characters and spaces
@@ -372,8 +414,9 @@ mdc: true
         clean = re.sub(r'[-\s]+', '-', clean)
         return clean.lower()
 
-# MCP Integration Class
-class MCPSlidevConverter:
+# AI Integration Wrapper Class
+class AIAssistantSlidevConverter:
+    """Wrapper class for AI assistant integration (GitHub Copilot, etc.)"""
     def __init__(self):
         self.converter = SlidevConverter()
     
@@ -384,7 +427,7 @@ class MCPSlidevConverter:
     
     def convert_from_google_drive_doc(self, doc_content: str, title: str, 
                                     output_dir: str = "./slidev-presentations") -> str:
-        """Convert Google Docs content fetched via MCP to Slidev"""
+        """Convert Google Docs content to Slidev"""
         return self.converter.convert_to_slidev(doc_content, title, output_dir)
     
     def batch_convert_powerpoints(self, pptx_directory: str, 
@@ -402,6 +445,9 @@ class MCPSlidevConverter:
         
         return results
 
+# Backward compatibility alias for existing integrations
+MCPSlidevConverter = AIAssistantSlidevConverter
+
 # CLI Usage Example
 def main():
     """Example usage of the converter"""
@@ -414,7 +460,7 @@ def main():
     
     args = parser.parse_args()
     
-    converter = MCPSlidevConverter()
+    converter = AIAssistantSlidevConverter()
     
     if args.pptx:
         # Convert single PowerPoint file
@@ -456,11 +502,11 @@ if __name__ == "__main__":
     main()
 """
 
-## Integration with Claude
+## Integration with GitHub Copilot
 
-This script can be enhanced to work with Claude by:
+This script can be enhanced to work with GitHub Copilot by:
 
-1. **MCP Integration**: Use the Google Drive MCP server to fetch documents
+1. **GitHub Copilot CLI Integration**: Use GitHub Copilot to assist with document processing
 2. **Batch Processing**: Process multiple presentations at once
 3. **Template Customization**: Allow different Slidev themes and layouts
 4. **Asset Management**: Handle images and media files
@@ -469,10 +515,14 @@ This script can be enhanced to work with Claude by:
 ## Usage with your presentations:
 
 ```bash
-# Using Claude with this script
-claude run slides_converter.py --pptx "presentation.pptx"
+# Direct usage of the script
+python slidev_converter.py --pptx "presentation.pptx"
 
 # Or batch convert multiple presentations
-claude run slides_converter.py --batch ./presentations/
+python slidev_converter.py --batch ./presentations/
+
+# Use GitHub Copilot CLI to get help with the script
+gh copilot suggest "how to convert a PowerPoint file to Slidev"
+gh copilot explain slidev_converter.py
 ```
 """
